@@ -1,2 +1,4 @@
 # api-client-python
-StockGeist API client written in python.
+Python client for fetching data from StockGeist's REST API.
+
+
