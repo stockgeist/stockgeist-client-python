@@ -1,7 +1,16 @@
-import requests
-from typing import Tuple
-from responses import MessageMetricsResponse, ArticleMetricsResponse, PriceMetricsResponse, TopicMetricsResponse, \
-    RankingMetricsResponse, SymbolsResponse, FundamentalsResponse
+from typing import Tuple as _Tuple
+
+import requests as _requests
+
+from stockgeist.responses import ArticleMetricsResponse as _ArticleMetricsResponse
+from stockgeist.responses import MessageMetricsResponse as _MessageMetricsResponse
+from stockgeist.responses import PriceMetricsResponse as _PriceMetricsResponse
+from stockgeist.responses import RankingMetricsResponse as _RankingMetricsResponse
+from stockgeist.responses import TopicMetricsResponse as _TopicMetricsResponse
+
+
+# from stockgeist.responses import MessageMetricsResponse as _MessageMetricsResponse
+# from stockgeist.responses import MessageMetricsResponse as _MessageMetricsResponse
 
 
 class StockGeistClient:
@@ -11,15 +20,15 @@ class StockGeistClient:
 
     def __init__(self, token):
         self.token = token
-        self.session = requests.Session()
+        self.session = _requests.Session()
         self.base_url = 'https://api.stockgeist.ai/'
 
     def get_message_metrics(self,
                             symbol: str,
                             timeframe: str = '5m',
-                            filter: Tuple[str, ...] = ('total_count', ),
+                            filter: _Tuple[str, ...] = ('total_count', ),
                             start: str = None,
-                            end: str = None) -> MessageMetricsResponse:
+                            end: str = None) -> _MessageMetricsResponse:
         """
         Queries StockGeist's API and gets message metrics data.
         Returns :class:`MessageMetricsResponse <MessageMetricsResponse>` object.
@@ -57,14 +66,14 @@ class StockGeistClient:
         # query endpoint
         res = self.session.get(query).json()
 
-        return MessageMetricsResponse(res, query_args)
+        return _MessageMetricsResponse(res, query_args)
 
     def get_article_metrics(self,
                             symbol: str,
                             timeframe: str = '5m',
-                            filter: Tuple[str, ...] = ('titles',),
+                            filter: _Tuple[str, ...] = ('titles',),
                             start: str = None,
-                            end: str = None) -> ArticleMetricsResponse:
+                            end: str = None) -> _ArticleMetricsResponse:
         """
         Queries StockGeist's API and gets article metrics data.
         Returns :class:`ArticleMetricsResponse <ArticleMetricsResponse>` object.
@@ -100,14 +109,14 @@ class StockGeistClient:
         # query endpoint
         res = self.session.get(query).json()
 
-        return ArticleMetricsResponse(res, query_args)
+        return _ArticleMetricsResponse(res, query_args)
 
     def get_price_metrics(self,
                           symbol: str,
                           timeframe: str = '5m',
-                          filter: Tuple[str, ...] = ('close',),
+                          filter: _Tuple[str, ...] = ('close',),
                           start: str = None,
-                          end: str = None) -> PriceMetricsResponse:
+                          end: str = None) -> _PriceMetricsResponse:
         """
         Queries StockGeist's API and gets price metrics data.
         Returns :class:`PriceMetricsResponse <PriceMetricsResponse>` object.
@@ -143,14 +152,14 @@ class StockGeistClient:
         # query endpoint
         res = self.session.get(query).json()
 
-        return PriceMetricsResponse(res, query_args)
+        return _PriceMetricsResponse(res, query_args)
 
     def get_topic_metrics(self,
                           symbol: str,
                           timeframe: str = '5m',
-                          filter: Tuple[str, ...] = ('words',),
+                          filter: _Tuple[str, ...] = ('words',),
                           start: str = None,
-                          end: str = None) -> TopicMetricsResponse:
+                          end: str = None) -> _TopicMetricsResponse:
         """
         Queries StockGeist's API and gets topic metrics data.
         Returns :class:`TopicMetricsResponse <TopicMetricsResponse>` object.
@@ -186,17 +195,17 @@ class StockGeistClient:
         # query endpoint
         res = self.session.get(query).json()
 
-        return TopicMetricsResponse(res, query_args)
+        return _TopicMetricsResponse(res, query_args)
 
     def get_ranking_metrics(self,
                             symbol: str = None,
                             timeframe: str = '5m',
-                            filter: Tuple[str, ...] = ('symbols',),
+                            filter: _Tuple[str, ...] = ('symbols',),
                             start: str = None,
                             end: str = None,
                             by: str = 'total_count',
                             direction: str = 'descending',
-                            top: int = 5) -> RankingMetricsResponse:
+                            top: int = 5) -> _RankingMetricsResponse:
         """
         Queries StockGeist's API and gets ranking metrics data.
         Returns :class:`RankingMetricsResponse <RankingMetricsResponse>` object.
@@ -239,11 +248,4 @@ class StockGeistClient:
         # query endpoint
         res = self.session.get(query).json()
 
-        return RankingMetricsResponse(res, query_args)
-
-
-if __name__ == '__main__':
-    client = StockGeistClient('39f3fe9b-2759-487f-9c45-9e2cefa87840')
-    response = client.get_topic_metrics(symbol='AAPL')
-
-    print(response.data)
+        return _RankingMetricsResponse(res, query_args)

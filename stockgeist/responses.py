@@ -1,12 +1,12 @@
-from typing import Dict, List
+from typing import Dict as _Dict
 
 
-class Response:
+class _Response:
     """
     Base class for all response objects returned as endpoint-querying results.
     """
 
-    def __init__(self, res: Dict):
+    def __init__(self, res: _Dict):
         self.status_code = res['metadata']['status_code']
         self.message = res['metadata']['message']
         self.credits = res['metadata']['credits'] if 'credits' in res['metadata'] else None
@@ -26,12 +26,12 @@ class Response:
                     self.data[key] = [entry[key] for entry in self.raw_data]
 
 
-class MessageMetricsResponse(Response):
+class MessageMetricsResponse(_Response):
     """
     Object containing data received from the *message-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
@@ -47,12 +47,12 @@ class MessageMetricsResponse(Response):
                f'  metrics: {", ".join(self.query_args["filter"])}'
 
 
-class ArticleMetricsResponse(Response):
+class ArticleMetricsResponse(_Response):
     """
     Object containing data received from the *article-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
@@ -68,12 +68,12 @@ class ArticleMetricsResponse(Response):
                f'  metrics: {", ".join(self.query_args["filter"])}'
 
 
-class PriceMetricsResponse(Response):
+class PriceMetricsResponse(_Response):
     """
     Object containing data received from the *price-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
@@ -89,12 +89,12 @@ class PriceMetricsResponse(Response):
                f'  metrics: {", ".join(self.query_args["filter"])}'
 
 
-class TopicMetricsResponse(Response):
+class TopicMetricsResponse(_Response):
     """
     Object containing data received from the *topic-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
@@ -110,12 +110,12 @@ class TopicMetricsResponse(Response):
                f'  metrics: {", ".join(self.query_args["filter"])}'
 
 
-class RankingMetricsResponse(Response):
+class RankingMetricsResponse(_Response):
     """
     Object containing data received from the *ranking-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
@@ -131,12 +131,12 @@ class RankingMetricsResponse(Response):
                f'  metrics: {", ".join(self.query_args["filter"])}'
 
 
-class SymbolsResponse(Response):
+class SymbolsResponse(_Response):
     """
     Object containing data received from the *symbols* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
@@ -152,12 +152,12 @@ class SymbolsResponse(Response):
                f'  metrics: {", ".join(self.query_args["filter"])}'
 
 
-class FundamentalsResponse(Response):
+class FundamentalsResponse(_Response):
     """
     Object containing data received from the *fundametals* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: Dict, query_args: Dict):
+    def __init__(self, res: _Dict, query_args: _Dict):
         super().__init__(res)
 
         if self.status_code != 200:
