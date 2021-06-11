@@ -31,6 +31,9 @@ Resulting output:
 {'timestamp': ['2021-06-11 13:20:00+00:00'], 'total_count': [13.0]}
 ```
 
+The `aapl_response` is an object encapsulating the data fetched from the API together with some useful 
+methods to easily explore the data, e.g., plot the time series. 
+
 
 ## Licence
 This package is provided as open source under the terms of the [MIT Licence](https://opensource.org/licenses/MIT).
