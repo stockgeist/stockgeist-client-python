@@ -1,6 +1,10 @@
 from typing import Tuple as _Tuple
+from typing import Dict as _Dict
 
+import pandas as pd
 import requests as _requests
+import pandas_market_calendars as mcal
+from tqdm import tqdm
 
 from stockgeist.responses import ArticleMetricsResponse as _ArticleMetricsResponse
 from stockgeist.responses import MessageMetricsResponse as _MessageMetricsResponse
@@ -22,6 +26,29 @@ class StockGeistClient:
         self.token = token
         self.session = _requests.Session()
         self.base_url = 'https://api.stockgeist.ai/'
+        self.mkt_calendar = mcal.get_calendar('NYSE').schedule(start_date='2020-01-01', end_date='2025-01-01')
+
+    def _gen(self):
+        while True:
+            yield
+
+    def _construct_query(self, endpoint_name: str, query_args: _Dict[str, object]) -> str:
+        """
+        Helper function for constructing API query.
+        :param endpoint_name: Name of the StockGeist's REST API endpoint.
+        :param query_args: Dict containing all arguments passed to REST API.
+        :rtype: str
+        """
+        # construct query
+        query = f'{self.base_url}{endpoint_name}?token={self.token}&'
+        for name, value in query_args.items():
+            if value is not None:
+                if isinstance(value, tuple):
+                    query += f'{name}={",".join(value)}&'
+                else:
+                    query += f'{name}={value}&'
+
+        return query
 
     def get_message_metrics(self,
                             symbol: str,
@@ -50,21 +77,22 @@ class StockGeistClient:
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = f'{self.base_url}time-series/message-metrics?token={self.token}&'
-        if symbol is not None:
-            query += f'symbol={symbol}&'
-        if timeframe is not None:
-            query += f'timeframe={timeframe}&'
-        if filter is not None:
-            query += f'filter={",".join(filter)}&'
-        if start is not None:
-            query += f'start={start}&'
-        if end is not None:
-            query += f'end={end}'
+        res = []
+        for _ in tqdm(self._gen()):
+            # construct query
+            query = self._construct_query('time-series/message-metrics', query_args)
 
-        # query endpoint
-        res = self.session.get(query).json()
+            # query endpoint
+            res_batch = self.session.get(query).json()
+            res.append(res_batch)
+            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
+
+            if start is not None:
+                # check whether all data range is fetched
+                if first_timestamp == query_args['start']:
+                    break
+                else:
+                    query_args['end'] = first_timestamp
 
         return _MessageMetricsResponse(res, query_args)
 
@@ -93,21 +121,22 @@ class StockGeistClient:
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = f'{self.base_url}time-series/article-metrics?token={self.token}&'
-        if symbol is not None:
-            query += f'symbol={symbol}&'
-        if timeframe is not None:
-            query += f'timeframe={timeframe}&'
-        if filter is not None:
-            query += f'filter={",".join(filter)}&'
-        if start is not None:
-            query += f'start={start}&'
-        if end is not None:
-            query += f'end={end}'
+        res = []
+        for _ in tqdm(self._gen()):
+            # construct query
+            query = self._construct_query('time-series/article-metrics', query_args)
 
-        # query endpoint
-        res = self.session.get(query).json()
+            # query endpoint
+            res_batch = self.session.get(query).json()
+            res.append(res_batch)
+            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
+
+            if start is not None:
+                # check whether all data range is fetched
+                if first_timestamp == query_args['start']:
+                    break
+                else:
+                    query_args['end'] = first_timestamp
 
         return _ArticleMetricsResponse(res, query_args)
 
@@ -136,21 +165,29 @@ class StockGeistClient:
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = f'{self.base_url}time-series/price-metrics?token={self.token}&'
-        if symbol is not None:
-            query += f'symbol={symbol}&'
-        if timeframe is not None:
-            query += f'timeframe={timeframe}&'
-        if filter is not None:
-            query += f'filter={",".join(filter)}&'
-        if start is not None:
-            query += f'start={start}&'
-        if end is not None:
-            query += f'end={end}'
+        res = []
+        for _ in tqdm(self._gen()):
+            # construct query
+            query = self._construct_query('time-series/price-metrics', query_args)
 
-        # query endpoint
-        res = self.session.get(query).json()
+            # query endpoint
+            res_batch = self.session.get(query).json()
+            res.append(res_batch)
+
+            try:
+                # some data returned
+                first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp'])
+            except IndexError:
+                # data not returned - might have encountered market holiday, weekend or non-market hours
+                first_timestamp = pd.Timestamp(query_args['end']).replace(hour=23, minute=0, second=0) - pd.Timedelta(
+                    days=1)
+
+            if start is not None:
+                # check whether all data range is fetched
+                if first_timestamp.strftime('%Y-%m-%dT%H:%M:%S') <= query_args['start']:
+                    break
+                else:
+                    query_args['end'] = first_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
 
         return _PriceMetricsResponse(res, query_args)
 
@@ -179,21 +216,22 @@ class StockGeistClient:
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = f'{self.base_url}time-series/topic-metrics?token={self.token}&'
-        if symbol is not None:
-            query += f'symbol={symbol}&'
-        if timeframe is not None:
-            query += f'timeframe={timeframe}&'
-        if filter is not None:
-            query += f'filter={",".join(filter)}&'
-        if start is not None:
-            query += f'start={start}&'
-        if end is not None:
-            query += f'end={end}'
+        res = []
+        for _ in tqdm(self._gen()):
+            # construct query
+            query = self._construct_query('time-series/topic-metrics', query_args)
 
-        # query endpoint
-        res = self.session.get(query).json()
+            # query endpoint
+            res_batch = self.session.get(query).json()
+            res.append(res_batch)
+            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
+
+            if start is not None:
+                # check whether all data range is fetched
+                if first_timestamp == query_args['start']:
+                    break
+                else:
+                    query_args['end'] = first_timestamp
 
         return _TopicMetricsResponse(res, query_args)
 
@@ -232,20 +270,21 @@ class StockGeistClient:
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = f'{self.base_url}time-series/ranking-metrics?token={self.token}&'
-        if symbol is not None:
-            query += f'symbol={symbol}&'
-        if timeframe is not None:
-            query += f'timeframe={timeframe}&'
-        if filter is not None:
-            query += f'filter={",".join(filter)}&'
-        if start is not None:
-            query += f'start={start}&'
-        if end is not None:
-            query += f'end={end}'
+        res = []
+        for _ in tqdm(self._gen()):
+            # construct query
+            query = self._construct_query('time-series/ranking-metrics', query_args)
 
-        # query endpoint
-        res = self.session.get(query).json()
+            # query endpoint
+            res_batch = self.session.get(query).json()
+            res.append(res_batch)
+            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
+
+            if start is not None:
+                # check whether all data range is fetched
+                if first_timestamp == query_args['start']:
+                    break
+                else:
+                    query_args['end'] = first_timestamp
 
         return _RankingMetricsResponse(res, query_args)
