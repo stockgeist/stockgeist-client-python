@@ -1,20 +1,20 @@
-from typing import Dict as _Dict
-from typing import List as _List
-
-import pandas as pd
-import plotly.graph_objects as _go
-from collections import deque as _deque
-import pandas as _pd
 import logging
-from plotly.subplots import make_subplots
-import numpy as np
-
-
-logger = logging.getLogger()
+from collections import deque
+from typing import Dict, List
 
 import cufflinks as cf
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+import wordcloud
+from plotly.subplots import make_subplots
+from termcolor import colored
 
+logger = logging.getLogger()
 cf.go_offline(connected=False)
+
+# type aliases
+Figure = go.Figure
 
 
 class _Response:
@@ -22,42 +22,40 @@ class _Response:
     Base class for all response objects returned as endpoint-querying results.
     """
 
-    def __init__(self, res: _List[_Dict]):
+    def __init__(self, res: List[Dict]):
         self._status_codes = [entry['metadata']['status_code'] for entry in res]
         self._messages = [entry['metadata']['message'] for entry in res]
         self._credits = [entry['metadata']['credits'] if 'credits' in entry['metadata'] else None for entry in res]
         self._server_timestamps = [entry['metadata']['server_timestamp'] for entry in res]
-        self._data_dict = [entry['body'] for entry in res]
-        self._data_list = self._convert_raw_data_to_list()
-        self._data_df = self._convert_data_to_df()
+        self._raw_data = res
+        self._data_dict = self._convert_raw_data_to_time_series()
 
-    def _convert_raw_data_to_list(self):
+    def _convert_raw_data_to_time_series(self) -> Dict[str, List]:
         """
         Convert raw data from list of dicts to dict of lists.
+        :return: Dictionary of lists of data.
         """
 
         data = {}
-        for batch in self._data_dict:
-            if len(batch) != 0:
-                for key in batch[0].keys():
-                    if key != 'symbol':
-                        if key not in data:
-                            data[key] = _deque([entry[key] for entry in batch])
-                        else:
-                            data[key].extendleft([entry[key] for entry in batch][::-1])
+        is_time_series_data = False
+        for batch in self._raw_data:
+            if isinstance(batch['body'], list):
+                # time series endpoint data
+                is_time_series_data = True
+                if len(batch['body']) != 0:
+                    for key in batch['body'][0].keys():
+                        if key != 'symbol':
+                            if key not in data:
+                                data[key] = deque([entry[key] for entry in batch['body']])
+                            else:
+                                data[key].extendleft([entry[key] for entry in batch['body']][::-1])
 
-        # convert deques to lists
-        for key in data.keys():
-            data[key] = list(data[key])
+        if is_time_series_data:
+            # convert deques to lists
+            for key in data.keys():
+                data[key] = list(data[key])
 
         return data
-
-    def _convert_data_to_df(self):
-        # create pandas DataFrame
-        df = pd.DataFrame(self._data_list, index=pd.DatetimeIndex(self._data_list['timestamp']))
-        df = df.drop('timestamp', axis=1)
-
-        return df
 
     @property
     def status_codes(self):
@@ -76,33 +74,48 @@ class _Response:
         return self._server_timestamps
 
     @property
-    def data_dict(self):
+    def raw_data(self):
+        return self._raw_data
+
+    @property
+    def as_dict(self):
         return self._data_dict
 
     @property
-    def data_list(self):
-        return self._data_list
+    def as_dataframe(self):
+        # create pandas DataFrame
+        df = pd.DataFrame(self._data_dict, index=pd.DatetimeIndex(self._data_dict['timestamp']))
+        df = df.drop('timestamp', axis=1)
+        return df
 
-    @property
-    def data_df(self):
-        return self._data_df
-
-    def _validate_metrics(self, to_parse, available_metrics):
+    def _validate_metrics(self, to_parse: str, available_metrics: List[str]) -> List[str]:
+        """
+        Check whether metrics to be visualized are valid for the particular data.
+        :param to_parse: String with metrics joined by + signs.
+        :param available_metrics: List of metrics available for visualization for particular data.
+        :return: List of validated metric names.
+        """
         # parse and validate plotting options
         metric_names = to_parse.split('+')
         for name in metric_names:
             if name not in available_metrics:
                 raise Exception(f'{name} is not a valid metric!')
-            if name not in self._data_list.keys():
+            if name not in self._data_dict.keys():
                 raise Exception(
                     f'{name} metric not downloaded! Check the arguments of the appropriate StockGeistClient fetcher function!')
 
         return metric_names
 
-    def _plot_simple(self, title, metric_names, right_y_metric_names):
-
+    def _plot_simple(self, title: str, metric_names: List[str], right_y_metric_names: List[str]) -> Figure:
+        """
+        Standard method for plotting line plots.
+        :param title: String displayed as graph title.
+        :param metric_names: List of validated metrics.
+        :param right_y_metric_names: List of metrics to be displayed on right-y axis.
+        :return: plotly Figure object.
+        """
         # plot metrics
-        fig = pd.DataFrame(index=self._data_list['timestamp']) \
+        fig = pd.DataFrame(index=self._data_dict['timestamp']) \
             .iplot(kind='scatter',
                    xTitle='Time',
                    title=title,
@@ -114,17 +127,17 @@ class _Response:
         for name in metric_names:
             # add trace
             plot_args = dict(
-                x=self._data_list['timestamp'],
-                y=self._data_list[name],
+                x=self._data_dict['timestamp'],
+                y=self._data_dict[name],
                 mode='lines',
                 name=name,
             )
 
             if name in right_y_metric_names:
-                fig.add_trace(_go.Scatter(**plot_args), secondary_y=True)
+                fig.add_trace(go.Scatter(**plot_args), secondary_y=True)
                 right_y_metrics.append(name)
             else:
-                fig.add_trace(_go.Scatter(**plot_args), secondary_y=False)
+                fig.add_trace(go.Scatter(**plot_args), secondary_y=False)
                 left_y_metrics.append(name)
 
         # set y axis titles
@@ -139,34 +152,37 @@ class MessageMetricsResponse(_Response):
     Object containing data received from the *message-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _List[_Dict], query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
         if self._status_codes[0] != 200:
             raise Exception(zip(self._server_timestamps, self._messages))
 
-        self.query_args = query_args
-        self.available_metrics = ['inf_positive_count', 'inf_neutral_count', 'inf_negative_count', 'inf_total_count',
-                                  'em_positive_count', 'em_neutral_count', 'em_negative_count', 'em_total_count',
-                                  'total_count', 'pos_index', 'msg_ratio', 'ma', 'ma_diff', 'std_dev', 'ma_count_change']
+        self._query_args = query_args
+        self._available_metrics = ['inf_positive_count', 'inf_neutral_count', 'inf_negative_count', 'inf_total_count',
+                                   'em_positive_count', 'em_neutral_count', 'em_negative_count', 'em_total_count',
+                                   'total_count', 'pos_index', 'msg_ratio', 'ma', 'ma_diff', 'std_dev', 'ma_count_change']
 
-    def visualize(self, what='total_count'):
-
+    def visualize(self, what: str = 'total_count') -> None:
+        """
+        Visualize selected metrics from the downloaded message metrics data.
+        :param what: String with metrics joined by + signs.
+        """
         # validate metrics
-        metric_names = self._validate_metrics(what, self.available_metrics)
+        metric_names = self._validate_metrics(what, self._available_metrics)
 
         # plot metrics
-        fig = self._plot_simple(title=f'{self.query_args["symbol"]} Message Metrics',
+        fig = self._plot_simple(title=f'{self._query_args["symbol"]} Message Metrics',
                                 metric_names=metric_names,
                                 right_y_metric_names=['pos_index', 'msg_ratio', 'ma_count_change'])
         fig.show()
 
     def __repr__(self):
         return f'<message-metrics> endpoint data\n' \
-               f'  symbol: {self.query_args["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self._data_list["timestamp"][0]} -- {_pd.Timestamp(self._data_list["timestamp"][-1]) + pd.Timedelta(self.query_args["timeframe"])}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  symbol: {self._query_args["symbol"]}\n' \
+               f'  timeframe: {self._query_args["timeframe"]}\n' \
+               f'  time range: {self._data_dict["timestamp"][0]} -- {pd.Timestamp(self._data_dict["timestamp"][-1]) + pd.Timedelta(self._query_args["timeframe"])}\n' \
+               f'  metrics: {", ".join(self._query_args["filter"])}'
 
 
 class ArticleMetricsResponse(_Response):
@@ -174,32 +190,28 @@ class ArticleMetricsResponse(_Response):
     Object containing data received from the *article-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _List[_Dict], query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
         if self._status_codes[0] != 200:
             raise Exception(self._messages)
 
-        self.query_args = query_args
-        self.available_metrics = ['titles', 'mentions', 'title_sentiments', 'summaries', 'sentiment_spans']
+        self._query_args = query_args
+        self._available_metrics = ['titles', 'mentions', 'title_sentiments']
+        self._max_title_words = 10
+        self._max_titles = 15
 
-    def visualize(self, what='titles'):
-
-        # validate metrics
-        metric_names = self._validate_metrics(what, self.available_metrics)
-
-        if 'summaries' not in metric_names and 'sentiment_spans' not in metric_names:
-            fig = self._plot_simple(title=f'{self.query_args["symbol"]} Article Metrics',
-                                    metric_names=metric_names)
-            fig.show()
-
-        else:
-            self._visualize_sentiment()
-
-    def _plot_simple(self, title, metric_names):
+    def _plot_simple(self, title: str, metric_names: List[str], right_y_metric_names=None) -> Figure:
+        """
+        Method for plotting line plots tailored to article metrics data.
+        :param title: String displayed as graph title.
+        :param metric_names: List of validated metrics.
+        :param right_y_metric_names: Not used.
+        :return: plotly Figure object.
+        """
 
         # plot metrics
-        fig = pd.DataFrame(index=self._data_list['timestamp']) \
+        fig = pd.DataFrame(index=self._data_dict['timestamp']) \
             .iplot(kind='scatter',
                    xTitle='Time',
                    title=title,
@@ -212,19 +224,27 @@ class ArticleMetricsResponse(_Response):
             if name == 'titles':
                 # add trace
                 plot_args = dict(
-                    x=self._data_list['timestamp'],
-                    y=[len(entry) for entry in self._data_list[name]],
+                    x=self._data_dict['timestamp'],
+                    y=[len(entry) for entry in self._data_dict[name]],
                     mode='lines',
                     name='titles_count',
                 )
                 # prepare hover-on text
                 text = []
-                for entry in self._data_list[name]:
+                for entry in self._data_dict[name]:
                     txt = "<br>Titles:"
-                    for title in entry:
-                        txt += f"<br> - {title}"
+
+                    # format titles
+                    for title in entry[:self._max_titles]:
+                        title_words = title.split()
+                        if len(title_words) <= self._max_title_words:
+                            txt += f"<br> - {' '.join(title_words)}"
+                        else:
+                            txt += f"<br> - {' '.join(title_words[:self._max_title_words])} ..."
+                    if len(entry) > self._max_titles:
+                        txt += "<br> ..."
                     text.append(txt)
-                fig.add_trace(_go.Scatter(**plot_args,
+                fig.add_trace(go.Scatter(**plot_args,
                                           hovertemplate=
                                           '<br>Timestamp: %{x}' +
                                           '<br>Counts: %{y}' +
@@ -235,12 +255,12 @@ class ArticleMetricsResponse(_Response):
             elif name == 'mentions':
                 # add trace
                 plot_args = dict(
-                    x=self._data_list['timestamp'],
-                    y=[sum(entry) for entry in self._data_list[name]],
+                    x=self._data_dict['timestamp'],
+                    y=[sum(entry) for entry in self._data_dict[name]],
                     mode='lines',
                     name='mentions_count',
                 )
-                fig.add_trace(_go.Scatter(**plot_args,
+                fig.add_trace(go.Scatter(**plot_args,
                                           hovertemplate=
                                           '<br>Timestamp: %{x}' +
                                           '<br>Mentions: %{y}'
@@ -248,7 +268,7 @@ class ArticleMetricsResponse(_Response):
                 left_y_metrics.append(name)
             elif name == 'title_sentiments':
                 # add traces
-                counts = [np.unique(entry, return_counts=True) for entry in self._data_list[name]]
+                counts = [np.unique(entry, return_counts=True) for entry in self._data_dict[name]]
                 y = {label: [] for label in ['positive', 'neutral', 'negative']}
                 for entry in counts:
                     d = dict(zip(entry[0], entry[1]))
@@ -257,7 +277,7 @@ class ArticleMetricsResponse(_Response):
 
                 for label in ['positive', 'neutral', 'negative']:
                     plot_args = dict(
-                        x=self._data_list['timestamp'],
+                        x=self._data_dict['timestamp'],
                         y=y[label],
                         mode='lines',
                         name=f'titles_count_{label}',
@@ -266,31 +286,38 @@ class ArticleMetricsResponse(_Response):
                     if 'titles' in metric_names:
                         # add titles as hover-on
                         text = []
-                        for i, entry in enumerate(self._data_list[name]):
-                            titles = np.array(self._data_list['titles'][i])
+                        for i, entry in enumerate(self._data_dict[name]):
+                            titles = np.array(self._data_dict['titles'][i])
                             if len(entry) != 0:
                                 titles = titles[np.array(entry) == label]
                             else:
                                 titles = []
 
+                            # format titles
                             txt = "<br>Titles:"
-                            for title in titles:
-                                txt += f"<br> - {title}"
+                            for title in titles[:self._max_titles]:
+                                title_words = title.split()
+                                if len(title_words) <= self._max_title_words:
+                                    txt += f"<br> - {' '.join(title_words)}"
+                                else:
+                                    txt += f"<br> - {' '.join(title_words[:self._max_title_words])} ..."
+                            if len(titles) > self._max_titles:
+                                txt += "<br> ..."
                             text.append(txt)
 
                         hovertemplate = '<br>Timestamp: %{x}' + \
                                         '<br>Counts: %{y}' + \
                                         '%{text}'
-                        fig.add_trace(_go.Scatter(**plot_args,
+                        fig.add_trace(go.Scatter(**plot_args,
                                                   hovertemplate=hovertemplate,
                                                   text=text), secondary_y=False)
                     else:
                         # don't add titles
                         hovertemplate = '<br>Timestamp: %{x}' + \
                                         '<br>Counts: %{y}'
-                        fig.add_trace(_go.Scatter(**plot_args,
+                        fig.add_trace(go.Scatter(**plot_args,
                                                   hovertemplate=hovertemplate), secondary_y=False)
-                    left_y_metrics.append(name)
+                    left_y_metrics.append(f'titles_count_{label}')
 
         # set y axis titles
         fig.update_yaxes(title_text=', '.join(left_y_metrics), secondary_y=False)
@@ -298,15 +325,49 @@ class ArticleMetricsResponse(_Response):
 
         return fig
 
-    def _visualize_sentiment(self):
-        pass
+    def visualize(self, what: str = 'titles') -> None:
+        """
+        Visualize selected metrics from the downloaded article metrics data.
+        :param what: String with metrics joined by + signs.
+        """
+        # validate metrics
+        metric_names = self._validate_metrics(what, self._available_metrics)
+
+        fig = self._plot_simple(title=f'{self._query_args["symbol"]} Article Metrics',
+                                metric_names=metric_names)
+        fig.show()
+
+    @staticmethod
+    def visualize_sentiment(summary: str, sentiment_spans: List[Dict]) -> None:
+        """
+        Print specified summary text with positive-sentiment parts displayed as green and negative-sentiment parts as red.
+        :param summary: Single summary string from downloaded article metrics data.
+        :param sentiment_spans: Sentiment spans corresponding to specified summary string.
+        """
+        def print_colored(text, sentiment=None):
+            if sentiment == 'positive':
+                print(colored(text, 'green'), end='')
+            elif sentiment == 'negative':
+                print(colored(text, 'red'), end='')
+            else:
+                print(text, end='')
+
+        i = 0
+        for entry in sentiment_spans:
+            span = entry['idx']
+            sentiment = entry['sentiment']
+            print_colored(summary[i:span[0]])
+            print_colored(summary[span[0]: span[1]], sentiment)
+            i = span[1]
+        print_colored(summary[i:])
+        print()
 
     def __repr__(self):
         return f'<article-metrics> endpoint data\n' \
-               f'  symbol: {self.query_args["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self._data_list["timestamp"][0]} -- {_pd.Timestamp(self._data_list["timestamp"][-1]) + pd.Timedelta(self.query_args["timeframe"])}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  symbol: {self._query_args["symbol"]}\n' \
+               f'  timeframe: {self._query_args["timeframe"]}\n' \
+               f'  time range: {self._data_dict["timestamp"][0]} -- {pd.Timestamp(self._data_dict["timestamp"][-1]) + pd.Timedelta(self._query_args["timeframe"])}\n' \
+               f'  metrics: {", ".join(self._query_args["filter"])}'
 
 
 class PriceMetricsResponse(_Response):
@@ -314,23 +375,27 @@ class PriceMetricsResponse(_Response):
     Object containing data received from the *price-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _List[_Dict], query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
         if self._status_codes[0] != 200:
             raise Exception(self._messages)
 
-        self.query_args = query_args
-        self.available_metrics = ['open', 'high', 'low', 'close', 'volume']
+        self._query_args = query_args
+        self._available_metrics = ['open', 'high', 'low', 'close', 'volume']
 
-    def visualize(self, what='close', display_candlesticks=False):
-
+    def visualize(self, what: str = 'close', display_candlesticks: bool = False) -> None:
+        """
+        Visualize selected metrics from the downloaded price metrics data.
+        :param what: String with metrics joined by + signs.
+        :param display_candlesticks: Whether to display candlestick OHLCV chart (requires all corresponding metrics).
+        """
         # validate metrics
-        metric_names = self._validate_metrics(what, self.available_metrics)
+        metric_names = self._validate_metrics(what, self._available_metrics)
 
         # plot metrics
         if not display_candlesticks:
-            fig = self._plot_simple(title=f'{self.query_args["symbol"]} Price Metrics',
+            fig = self._plot_simple(title=f'{self._query_args["symbol"]} Price Metrics',
                                     metric_names=metric_names,
                                     right_y_metric_names=['volume'])
 
@@ -348,8 +413,8 @@ class PriceMetricsResponse(_Response):
                     and 'volume' in metric_names:
 
                 # candlestick chart
-                qf = cf.QuantFig(self._data_df, title=f'{self.query_args["symbol"]} Price Chart', legend='top',
-                                 name=self.query_args["symbol"])
+                qf = cf.QuantFig(self.as_dataframe, title=f'{self._query_args["symbol"]} Price Chart', legend='top',
+                                 name=self._query_args["symbol"])
                 qf.add_volume()
                 fig = qf.figure()
 
@@ -367,10 +432,10 @@ class PriceMetricsResponse(_Response):
 
     def __repr__(self):
         return f'<price-metrics> endpoint data\n' \
-               f'  symbol: {self.query_args["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self._data_list["timestamp"][0]} -- {_pd.Timestamp(self._data_list["timestamp"][-1]) + pd.Timedelta(self.query_args["timeframe"])}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  symbol: {self._query_args["symbol"]}\n' \
+               f'  timeframe: {self._query_args["timeframe"]}\n' \
+               f'  time range: {self._data_dict["timestamp"][0]} -- {pd.Timestamp(self._data_dict["timestamp"][-1]) + pd.Timedelta(self._query_args["timeframe"])}\n' \
+               f'  metrics: {", ".join(self._query_args["filter"])}'
 
 
 class TopicMetricsResponse(_Response):
@@ -378,23 +443,85 @@ class TopicMetricsResponse(_Response):
     Object containing data received from the *topic-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _List[_Dict], query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
         if self._status_codes[0] != 200:
             raise Exception(self._messages)
 
-        self.query_args = query_args
-        self.available_metrics = ['words', 'scores']
+        self._query_args = query_args
+        self._available_metrics = ['words', 'scores']
 
+    def _plot_wordcloud(self, n: int) -> Figure:
+        """
+        Create word cloud and popular topics bar chart.
+        :param n: Index of the data point to be visualized.
+        :return: plotly Figure object.
+        """
+        fig = make_subplots(1, 2)
 
+        # calculate word cloud
+        words = self._data_dict['words'][n]
+        scores = self._data_dict['scores'][n]
+        wc = wordcloud.WordCloud(width=800, height=800)
+        wc.generate_from_frequencies(dict(zip(words, scores)))
+        img = wc.to_array()
+
+        # word cloud plot
+        fig.append_trace(go.Image(z=img), 1, 1)
+
+        # bar plot
+        fig.append_trace(go.Bar(
+            x=scores[::-1],
+            y=list(range(1, len(words)+1)),
+            text=words[::-1],
+            textposition='auto',
+            marker=dict(
+                color='rgba(50, 171, 96, 0.6)',
+                line=dict(
+                    color='rgba(50, 171, 96, 1.0)',
+                    width=1),
+            ),
+            orientation='h',
+            hovertemplate='Score: %{x}'
+        ), 1, 2)
+
+        fig.update_layout(title={
+            'text': f'{self._query_args["symbol"]} Popular Topics',
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'})
+
+        fig.update_xaxes(showticklabels=False, col=1, row=1)
+        fig.update_yaxes(showticklabels=False, col=1, row=1)
+        fig.update_yaxes(showticklabels=False, col=2, row=1)
+
+        return fig
+
+    def visualize(self, timestamp: str) -> None:
+        """
+        Visualize selected metrics from the downloaded article metrics data.
+        :param timestamp: Timestamp of data point to be visualized.
+        """
+        try:
+            # check whether timestamp is valid
+            n = self.as_dataframe.index.get_loc(timestamp)
+        except:
+            raise Exception("Can't visualize topics at given timestamp! Timestamp is not valid or out of range!")
+
+        if 'words' in self._available_metrics and 'scores' in self._available_metrics:
+            fig = self._plot_wordcloud(n)
+            fig.show()
+        else:
+            logger.warning("Can't display word cloud! Make sure, that you downloaded words and scores data!")
 
     def __repr__(self):
         return f'<topic-metrics> endpoint data\n' \
-               f'  symbol: {self.query_args["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self._data_list["timestamp"][0]} -- {_pd.Timestamp(self._data_list["timestamp"][-1]) + pd.Timedelta(self.query_args["timeframe"])}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  symbol: {self._query_args["symbol"]}\n' \
+               f'  timeframe: {self._query_args["timeframe"]}\n' \
+               f'  time range: {self._data_dict["timestamp"][0]} -- {pd.Timestamp(self._data_dict["timestamp"][-1]) + pd.Timedelta(self._query_args["timeframe"])}\n' \
+               f'  metrics: {", ".join(self._query_args["filter"])}'
 
 
 class RankingMetricsResponse(_Response):
@@ -402,20 +529,23 @@ class RankingMetricsResponse(_Response):
     Object containing data received from the *ranking-metrics* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _List[_Dict], query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
-        if self.status_code != 200:
-            raise Exception(self.message)
+        if self._status_codes[0] != 200:
+            raise Exception(self._messages)
 
-        self.query_args = query_args
+        self._query_args = query_args
+
+    def visualize(self):
+        pass
 
     def __repr__(self):
         return f'<ranking-metrics> endpoint data\n' \
-               f'  symbol: {self.query_args["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self.data["timestamp"][0]} -- {_pd.Timestamp(self.data["timestamp"][-1]) + pd.Timedelta(self.query_args["timeframe"])}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  symbol: {self._query_args["symbol"]}\n' \
+               f'  timeframe: {self._query_args["timeframe"]}\n' \
+               f'  time range: {self._data_dict["timestamp"][0]} -- {pd.Timestamp(self._data_dict["timestamp"][-1]) + pd.Timedelta(self._query_args["timeframe"])}\n' \
+               f'  metrics: {", ".join(self._query_args["filter"])}'
 
 
 class SymbolsResponse(_Response):
@@ -423,20 +553,30 @@ class SymbolsResponse(_Response):
     Object containing data received from the *symbols* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _Dict, query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
-        if self.status_code != 200:
-            raise Exception(self.message)
+        if self._status_codes[0] != 200:
+            raise Exception(self._messages)
 
-        self.query_args = query_args
+        self._query_args = query_args
+
+    @property
+    def as_dict(self):
+        return self._raw_data[0]['body']['symbols']
+
+    @property
+    def as_dataframe(self):
+        stocks = self._raw_data[0]['body']['symbols']['stocks']
+        crypto = self._raw_data[0]['body']['symbols']['crypto']
+        crypto.extend(['-' for _ in range(len(stocks)-len(crypto))])
+        d = {'stocks': stocks, 'crypto': crypto}
+        df = pd.DataFrame(d)
+        return df
 
     def __repr__(self):
         return f'<symbols> endpoint data\n' \
-               f'  symbol: {self.raw_data[0]["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self.raw_data[0]["timestamp"]} -- {self.raw_data[-1]["timestamp"]}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  date: {self._raw_data[0]["body"]["timestamp"]}'
 
 
 class FundamentalsResponse(_Response):
@@ -444,17 +584,28 @@ class FundamentalsResponse(_Response):
     Object containing data received from the *fundametals* endpoint of StockGeist's API.
     """
 
-    def __init__(self, res: _Dict, query_args: _Dict):
+    def __init__(self, res: List[Dict], query_args: Dict):
         super().__init__(res)
 
-        if self.status_code != 200:
-            raise Exception(self.message)
+        if self._status_codes[0] != 200:
+            raise Exception(self._messages)
 
-        self.query_args = query_args
+        self._query_args = query_args
+
+    @property
+    def as_dict(self):
+        return self._raw_data[0]['body']
+
+    @property
+    def as_dataframe(self):
+        d = self._raw_data[0]['body']
+        df = pd.DataFrame({key: [val] for key, val in d.items()})
+        return df
 
     def __repr__(self):
         return f'<fundamentals> endpoint data\n' \
-               f'  symbol: {self.raw_data[0]["symbol"]}\n' \
-               f'  timeframe: {self.query_args["timeframe"]}\n' \
-               f'  time range: {self.raw_data[0]["timestamp"]} -- {self.raw_data[-1]["timestamp"]}\n' \
-               f'  metrics: {", ".join(self.query_args["filter"])}'
+               f'  symbol: {self._query_args["symbol"]}\n' \
+               f'  date: {self._raw_data[0]["body"]["timestamp"]}' \
+               f'  metrics: {", ".join(self._query_args["filter"])}'
+
+
