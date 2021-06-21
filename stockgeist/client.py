@@ -85,6 +85,8 @@ class StockGeistClient:
             if res_batch['metadata']['status_code'] != 200:
                 return MessageMetricsResponse(res, query_args)
 
+            print(res_batch)
+
             first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
 
             if start is not None:
@@ -93,6 +95,8 @@ class StockGeistClient:
                     break
                 else:
                     query_args['end'] = first_timestamp
+            else:
+                break
 
         return MessageMetricsResponse(res, query_args)
 
@@ -142,6 +146,8 @@ class StockGeistClient:
                     break
                 else:
                     query_args['end'] = first_timestamp
+            else:
+                break
 
         return ArticleMetricsResponse(res, query_args)
 
@@ -197,6 +203,8 @@ class StockGeistClient:
                     break
                 else:
                     query_args['end'] = first_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+            else:
+                break
 
         return PriceMetricsResponse(res, query_args)
 
@@ -246,6 +254,8 @@ class StockGeistClient:
                     break
                 else:
                     query_args['end'] = first_timestamp
+            else:
+                break
 
         return TopicMetricsResponse(res, query_args)
 
@@ -307,6 +317,8 @@ class StockGeistClient:
                     break
                 else:
                     query_args['end'] = first_timestamp
+            else:
+                break
 
         return RankingMetricsResponse(res, query_args)
 
