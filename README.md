@@ -11,8 +11,9 @@ To import the package:
 `import stockgeist`
 
 ## Getting started
-Basic usage is very straightforward. First you have to create an instance of `StockGeistClient` and pass 
-your STockGeist REST API token to it:
+Basic usage is very straightforward. First you have to create an account with 
+[StockGeist](https://dashboard.stockgeist.ai) and obtain your token for connecting to the REST API.
+Then simply create an instance of `StockGeistClient` and pass your StockGeist REST API token to it:
 
 `client = stockgeist.StockGeistClient(token="example-token")`
 
@@ -22,7 +23,7 @@ about the Apple stock (NASDAQ:AAPL). All you have to do is to run the following 
 
 ```
 aapl_response = client.get_message_metrics(symbol="AAPL", timeframe="1h")
-print(aapl_response.data)
+print(aapl_response.as_dict)
 ```
 
 Resulting output:
@@ -32,7 +33,7 @@ Resulting output:
 ```
 
 The `aapl_response` is an object encapsulating the data fetched from the API together with some useful 
-methods to easily explore the data, e.g., plot the time series. 
+methods to easily explore the data, e.g., plot the time series.
 
 
 ## Licence

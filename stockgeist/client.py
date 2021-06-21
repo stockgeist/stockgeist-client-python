@@ -295,6 +295,10 @@ class StockGeistClient:
             if res_batch['metadata']['status_code'] != 200:
                 return RankingMetricsResponse(res, query_args)
 
+            # print(res_batch)
+            #
+            # raise Exception
+
             first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
 
             if start is not None:

@@ -1,5 +1,11 @@
-certifi==2021.5.30
-chardet==4.0.0
-idna==2.10
 requests==2.25.1
-urllib3==1.26.5
+
+stockgeist~=0.1.dev0
+setuptools~=52.0.0
+pandas~=1.2.4
+tqdm~=4.61.1
+plotly~=4.14.3
+cufflinks~=0.17.3
+numpy~=1.20.3
+wordcloud~=1.8.1
+termcolor~=1.1.0

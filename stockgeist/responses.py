@@ -5,6 +5,7 @@ from typing import Dict, List
 import cufflinks as cf
 import numpy as np
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
 import wordcloud
 from plotly.subplots import make_subplots
@@ -128,7 +129,7 @@ class _Response:
             # add trace
             plot_args = dict(
                 x=self._data_dict['timestamp'],
-                y=self._data_dict[name],
+                y=np.array(self._data_dict[name]).flatten(),
                 mode='lines',
                 name=name,
             )
@@ -143,6 +144,7 @@ class _Response:
         # set y axis titles
         fig.update_yaxes(title_text=', '.join(left_y_metrics), secondary_y=False)
         fig.update_yaxes(title_text=', '.join(right_y_metrics), secondary_y=True)
+        fig['layout']['yaxis']['autorange'] = "reversed"
 
         return fig
 
@@ -537,8 +539,51 @@ class RankingMetricsResponse(_Response):
 
         self._query_args = query_args
 
+    def _plot_animated(self):
+        """
+        Create animated plot showing stock ranking changes over time.
+        """
+        # create dataframe suitable for plotly express animation
+        d = {}
+        n = len(self._data_dict['symbols'][0])
+        for key in self._data_dict.keys():
+            lst = []
+            for entry in self._data_dict[key]:
+                if key == 'timestamp':
+                    lst.extend([entry[:-6]] * n)
+                else:
+                    lst.extend(entry)
+            d[key.rstrip('s')] = lst
+        df = pd.DataFrame(d)
+
+        # create animated plot
+        fig = px.bar(df, x="score", y="value",
+                     animation_frame="timestamp",
+                     color="symbol", hover_name="symbol",
+                     range_x=[-0.5, len(self._data_dict['scores'][0]) - 0.5],
+                     range_y=[0, df['value'][0]],
+                     text='symbol')
+        fig.update_layout(showlegend=False)
+        fig.update_layout(title={
+            'text': f'Ranking by {self._query_args["by"]}',
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'})
+
+        return fig
+
     def visualize(self):
-        pass
+        """
+        Visualize selected metrics from the downloaded ranking metrics data.
+        """
+        if self._query_args['symbol'] is None:
+            fig = self._plot_animated()
+        else:
+            fig = self._plot_simple(title=f'{self._query_args["symbol"]} Ranking by {self._query_args["by"]}',
+                                    metric_names=['scores'],
+                                    right_y_metric_names=['values'])
+        fig.show()
 
     def __repr__(self):
         return f'<ranking-metrics> endpoint data\n' \
