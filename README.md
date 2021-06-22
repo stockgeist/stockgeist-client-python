@@ -1,19 +1,31 @@
 # stockgeist-client-python
 Python client for fetching data from StockGeist's REST API. 
 
+The full documentation of the REST API 
+can be found at [https://docs.stockgeist.ai](https://docs.stockgeist.ai).
+
+The documentation describing all functionality of this Python package is hosted at  
+
 ## Installation
 The package can be installed using `pip`:
 
 `pip install stockgeist`
 
-To import the package:
+If you would like to try out the latest features which may not be available from PyPI version, you can
+install the package directly from this repository:
 
-`import stockgeist`
+`pip install git+https://github.com/stockgeist/stockgeist-client-python.git`
 
 ## Getting started
 Basic usage is very straightforward. First you have to create an account with 
 [StockGeist](https://dashboard.stockgeist.ai) and obtain your token for connecting to the REST API.
 Then simply create an instance of `StockGeistClient` and pass your StockGeist REST API token to it:
+
+```
+import stockgeist
+
+client = stockgeist.StockGeistClient(token="example-token")
+```
 
 `client = stockgeist.StockGeistClient(token="example-token")`
 
@@ -38,3 +50,7 @@ methods to easily explore the data, e.g., plot the time series.
 
 ## Licence
 This package is provided as open source under the terms of the [MIT Licence](https://opensource.org/licenses/MIT).
+
+## Contributing
+Feel free to contact us at [stockgeist@neurotechnology.com](stockgeist@neurotechnology.com) if you would 
+like to see additional features implemented in this package.
