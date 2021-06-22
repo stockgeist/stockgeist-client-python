@@ -4,8 +4,6 @@ Python client for fetching data from StockGeist's REST API.
 The full documentation of the REST API 
 can be found at [https://docs.stockgeist.ai](https://docs.stockgeist.ai).
 
-The documentation describing all functionality of this Python package is hosted at  
-
 ## Installation
 You can install the package directly from this repository:
 
@@ -41,6 +39,9 @@ Resulting output:
 
 The `aapl_response` is an object encapsulating the data fetched from the API together with some useful 
 methods to easily explore the data, e.g., plot the time series.
+
+For now, the best source of information about the functionality of `stockgeist-client-python` are the 
+docstrings inside the source files.
 
 
 ## Licence
