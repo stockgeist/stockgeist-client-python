@@ -3,8 +3,17 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as f:
     LONG_DESC = f.read()
 
-with open("requirements.txt", "r") as f:
-    REQUIRED_PACKAGES = f.readlines()
+REQUIRED_PACKAGES = [
+    'requests==2.25.1',
+    'setuptools~=52.0.0',
+    'pandas~=1.2.4',
+    'tqdm~=4.61.1',
+    'plotly~=4.14.3',
+    'cufflinks~=0.17.3',
+    'numpy~=1.20.3',
+    'wordcloud~=1.8.1',
+    'termcolor~=1.1.0',
+]
 
 setup(
     name="stockgeist",

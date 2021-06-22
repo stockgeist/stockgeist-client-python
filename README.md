@@ -7,12 +7,7 @@ can be found at [https://docs.stockgeist.ai](https://docs.stockgeist.ai).
 The documentation describing all functionality of this Python package is hosted at  
 
 ## Installation
-The package can be installed using `pip`:
-
-`pip install stockgeist`
-
-If you would like to try out the latest features which may not be available from PyPI version, you can
-install the package directly from this repository:
+You can install the package directly from this repository:
 
 `pip install git+https://github.com/stockgeist/stockgeist-client-python.git`
 

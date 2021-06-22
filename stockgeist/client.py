@@ -1,7 +1,6 @@
 from typing import Tuple, Dict
 
 import pandas as pd
-import pandas_market_calendars as mcal
 import requests
 from tqdm import tqdm
 
@@ -18,14 +17,10 @@ class StockGeistClient:
         self._token = token
         self._session = requests.Session()
         self._base_url = 'https://api.stockgeist.ai/'
-        self._mkt_calendar = mcal.get_calendar('NYSE').schedule(start_date='2020-01-01', end_date='2025-01-01')
 
     def _gen(self):
         while True:
             yield
-
-    def _credits_used(self, endpoint):
-        pass
 
     def _construct_query(self, endpoint_name: str, query_args: Dict[str, object]) -> str:
         """
