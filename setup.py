@@ -13,6 +13,7 @@ REQUIRED_PACKAGES = [
     'numpy~=1.20.3',
     'wordcloud~=1.8.1',
     'termcolor~=1.1.0',
+    'python-dotenv~=0.18.0'
 ]
 
 setup(
