@@ -53,5 +53,5 @@ docstrings inside the source files.
 This package is provided as open source under the terms of the [MIT Licence](https://opensource.org/licenses/MIT).
 
 ## Contributing
-Feel free to contact us at [stockgeist@neurotechnology.com](stockgeist@neurotechnology.com) if you would 
-like to see additional features implemented in this package.
+Feel free to contact us at [stockgeist@neurotechnology.com](stockgeist@neurotechnology.com) or simply 
+create an issue if you would like to see additional features implemented in this package. 

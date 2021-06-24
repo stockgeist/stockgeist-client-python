@@ -159,8 +159,34 @@ def test_client_fetch_data_ranking_metrics(api_connection, symbol, timeframe, st
 
 
 def test_client_fetch_data_symbols(api_connection):
-    pass
+    # get actual result
+    query_args = {}
+    symbols = api_connection._fetch_data_snapshot('snapshot/symbols', query_args)[0]['body']['symbols']['stocks']
+
+    assert len(symbols) > 2000 and isinstance(symbols, list) and isinstance(symbols[0], str)
 
 
 def test_client_fetch_data_fundamentals(api_connection):
-    pass
+    # fundamental metrics to be found
+    metrics = (
+        'book_to_sh', 'rsi_14', 'eps_next_y', '52w_range', 'eps_ttm', 'roa', 'dividend_perc', 'beta', 'oper_margin',
+        'p_to_fcf', 'eps_this_y', 'inst_trans', 'p_to_b', 'rel_volume', 'perf_quarter', 'sales', 'roi', 'inst_own',
+        'index', 'perf_ytd', 'eps_next_q', 'avg_volume', 'dividend', 'p_to_c', 'insider_trans', 'short_float',
+        'country', 'income', 'perf_year', 'perf_half_y', 'atr', 'sales_past_5_y', '52w_high_diff', 'gross_margin',
+        'peg', 'perf_month', 'volatility', 'cash_to_sh', 'short_ratio', 'eps_past_5_y', 'debt_to_eq', 'sector',
+        'industry', 'eps_q_to_q', 'p_to_e', 'prev_close', 'volume', 'sma_20_diff', 'p_to_s', 'price', 'current_ratio',
+        'forward_p_to_e', 'sma_50_diff', 'employees', 'profit_margin', 'sma_200_diff', 'sales_q_to_q', 'earnings',
+        'perf_week', 'quick_ratio', 'payout', 'eps_next_5_y', 'recom', 'roe', 'shs_outstand', 'description',
+        '52w_low_diff', 'company_name', 'target_price', 'market_cap', 'optionable', 'shortable', 'insider_own',
+        'shs_float', 'lt_debt_to_eq', 'timestamp', 'symbol'
+    )
+
+    # get actual result
+    query_args = {
+        'symbol': 'AAPL',
+        'filter': metrics
+    }
+    fundamentals = api_connection._fetch_data_snapshot('snapshot/fundamentals', query_args)[0]['body'].keys()
+
+    assert set(metrics) == set(fundamentals)
+
