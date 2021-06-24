@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 REQUIRED_PACKAGES = [
     'requests==2.25.1',
     'setuptools~=52.0.0',
-    # 'numpy~=1.20.3',
+    'numpy~=1.20.3',
     'pandas~=1.2.4',
     'tqdm~=4.61.1',
     'plotly~=4.14.3',

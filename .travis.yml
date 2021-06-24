@@ -3,8 +3,12 @@ python:
 - '3.7'
 - '3.8'
 - '3.9'
-#before_install:
-#- pip install --user codecov
+before_install:
+# Travis pre-installs an old version of numpy.
+# It conflicts with the latest one, see https://github.com/numpy/numpy/issues/12736
+- pip uninstall -y numpy # will uninstall your numpy from cache
+- pip uninstall -y numpy # will uninstall preinstalled numpy 1.15.2
+- pip uninstall -y numpy # just in case
 #after_success:
 #- codecov --file coverage/lcov.info --disable search
 install:
