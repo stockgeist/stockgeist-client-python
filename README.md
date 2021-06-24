@@ -1,4 +1,6 @@
 ![example workflow](https://github.com/stockgeist/stockgeist-client-python/actions/workflows/main.yml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/stockgeist-client-python/badge/?version=latest)](https://stockgeist-client-python.readthedocs.io/en/latest/?badge=latest)
+
 
 # stockgeist-client-python
 Python client for fetching data from StockGeist's REST API. 
