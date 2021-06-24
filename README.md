@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/{stockgeist}/{stockgeist-client-python}.png?branch=master)](https://travis-ci.com/{stockgeist}/{stockgeist-client-python})
-
+![example workflow](https://github.com/stockgeist/stockgeist-client-python/actions/workflows/main.yml/badge.svg)
 
 # stockgeist-client-python
 Python client for fetching data from StockGeist's REST API. 
