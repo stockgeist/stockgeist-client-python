@@ -6,11 +6,11 @@ with open("README.md", "r", encoding="utf-8") as f:
 REQUIRED_PACKAGES = [
     'requests==2.25.1',
     'setuptools~=52.0.0',
-    'pandas~=1.2.4',
+    'pandas',
     'tqdm~=4.61.1',
     'plotly~=4.14.3',
     'cufflinks~=0.17.3',
-    'numpy~=1.20.3',
+    'numpy',
     'wordcloud~=1.8.1',
     'termcolor~=1.1.0',
     'python-dotenv~=0.18.0'
