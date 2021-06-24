@@ -1,4 +1,4 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 
 import pandas as pd
 import requests
@@ -27,8 +27,9 @@ class StockGeistClient:
         Helper function for constructing API query.
         :param endpoint_name: Name of the StockGeist's REST API endpoint.
         :param query_args: Dict containing all arguments passed to REST API.
-        :rtype: str
+        :return: REST API query string.
         """
+
         # construct query
         query = f'{self._base_url}{endpoint_name}?token={self._token}&'
         for name, value in query_args.items():
@@ -37,8 +38,78 @@ class StockGeistClient:
                     query += f'{name}={",".join(value)}&'
                 else:
                     query += f'{name}={value}&'
+        query = query.strip('&')
 
         return query
+
+    def _fetch_data_time_series(self, endpoint_name: str, query_args: Dict) -> List[Dict]:
+        """
+        Fetch data from time series endpoints of REST API.
+        :param endpoint_name: Name of the StockGeist's REST API endpoint.
+        :param query_args: Dict containing all arguments passed to REST API.
+        :return: list of batches of data returned by REST API.
+        """
+
+        res = []
+        for _ in tqdm(self._gen()):
+            # construct query
+            query = self._construct_query(endpoint_name, query_args)
+
+            # query endpoint
+            res_batch = self._session.get(query).json()
+            res.append(res_batch)
+
+            # check response
+            if res_batch['metadata']['status_code'] != 200:
+                return res
+
+            if endpoint_name == 'time-series/price-metrics':
+                try:
+                    # some data returned
+                    first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp'])
+                except IndexError:
+                    # data not returned - might have encountered market holiday, weekend or non-market hours
+                    first_timestamp = pd.Timestamp(query_args['end']).replace(hour=23, minute=0,
+                                                                              second=0) - pd.Timedelta(
+                        days=1)
+
+                if query_args['start'] is not None:
+                    # check whether all data range is fetched
+                    if first_timestamp.strftime('%Y-%m-%dT%H:%M:%S') <= query_args['start']:
+                        break
+                    else:
+                        query_args['end'] = first_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+                else:
+                    break
+            else:
+                first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
+
+                if query_args['start'] is not None:
+                    # check whether all data range is fetched
+                    if first_timestamp == query_args['start']:
+                        break
+                    else:
+                        query_args['end'] = first_timestamp
+                else:
+                    break
+
+        return res
+
+    def _fetch_data_snapshot(self, endpoint_name: str, query_args: Dict) -> List[Dict]:
+        """
+        Fetch data from snapshot endpoints of REST API.
+        :param endpoint_name: Name of the StockGeist's REST API endpoint.
+        :param query_args: Dict containing all arguments passed to REST API.
+        :return: list of batches of data returned by REST API.
+        """
+
+        # construct query
+        query = self._construct_query(endpoint_name, query_args)
+
+        # query endpoint
+        res = self._session.get(query).json()
+
+        return [res]
 
     def get_message_metrics(self,
                             symbol: str,
@@ -48,8 +119,6 @@ class StockGeistClient:
                             end: str = None) -> MessageMetricsResponse:
         """
         Queries StockGeist's API and gets message metrics data.
-        Returns :class:`MessageMetricsResponse <MessageMetricsResponse>` object.
-
         :param symbol: Stock ticker for which to retrieve data.
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
         :param filter: What metrics to return with the response. Possible values are: inf_positive_count,
@@ -60,36 +129,15 @@ class StockGeistClient:
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
-        :rtype: MessageMetricsResponse
+        :return: MessageMetricsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        res = []
-        for _ in tqdm(self._gen()):
-            # construct query
-            query = self._construct_query('time-series/message-metrics', query_args)
-
-            # query endpoint
-            res_batch = self._session.get(query).json()
-            res.append(res_batch)
-
-            # check response
-            if res_batch['metadata']['status_code'] != 200:
-                return MessageMetricsResponse(res, query_args)
-
-            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
-
-            if start is not None:
-                # check whether all data range is fetched
-                if first_timestamp == query_args['start']:
-                    break
-                else:
-                    query_args['end'] = first_timestamp
-            else:
-                break
+        # get data
+        res = self._fetch_data_time_series('time-series/message-metrics', query_args)
 
         return MessageMetricsResponse(res, query_args)
 
@@ -101,8 +149,6 @@ class StockGeistClient:
                             end: str = None) -> ArticleMetricsResponse:
         """
         Queries StockGeist's API and gets article metrics data.
-        Returns :class:`ArticleMetricsResponse <ArticleMetricsResponse>` object.
-
         :param symbol: Stock ticker for which to retrieve data.
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
         :param filter: What metrics to return with the response. Possible values are: titles, title_sentiments,
@@ -111,36 +157,15 @@ class StockGeistClient:
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
-        :rtype: ArticleMetricsResponse
+        :return: ArticleMetricsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        res = []
-        for _ in tqdm(self._gen()):
-            # construct query
-            query = self._construct_query('time-series/article-metrics', query_args)
-
-            # query endpoint
-            res_batch = self._session.get(query).json()
-            res.append(res_batch)
-
-            # check response
-            if res_batch['metadata']['status_code'] != 200:
-                return ArticleMetricsResponse(res, query_args)
-
-            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
-
-            if start is not None:
-                # check whether all data range is fetched
-                if first_timestamp == query_args['start']:
-                    break
-                else:
-                    query_args['end'] = first_timestamp
-            else:
-                break
+        # get data
+        res = self._fetch_data_time_series('time-series/article-metrics', query_args)
 
         return ArticleMetricsResponse(res, query_args)
 
@@ -152,8 +177,6 @@ class StockGeistClient:
                           end: str = None) -> PriceMetricsResponse:
         """
         Queries StockGeist's API and gets price metrics data.
-        Returns :class:`PriceMetricsResponse <PriceMetricsResponse>` object.
-
         :param symbol: Stock ticker for which to retrieve data.
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
         :param filter: What metrics to return with the response. Possible values are: open, high, low, close, volume.
@@ -162,42 +185,15 @@ class StockGeistClient:
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
-        :rtype: PriceMetricsResponse
+        :return: PriceMetricsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        res = []
-        for _ in tqdm(self._gen()):
-            # construct query
-            query = self._construct_query('time-series/price-metrics', query_args)
-
-            # query endpoint
-            res_batch = self._session.get(query).json()
-            res.append(res_batch)
-
-            # check response
-            if res_batch['metadata']['status_code'] != 200:
-                return PriceMetricsResponse(res, query_args)
-
-            try:
-                # some data returned
-                first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp'])
-            except IndexError:
-                # data not returned - might have encountered market holiday, weekend or non-market hours
-                first_timestamp = pd.Timestamp(query_args['end']).replace(hour=23, minute=0, second=0) - pd.Timedelta(
-                    days=1)
-
-            if start is not None:
-                # check whether all data range is fetched
-                if first_timestamp.strftime('%Y-%m-%dT%H:%M:%S') <= query_args['start']:
-                    break
-                else:
-                    query_args['end'] = first_timestamp.strftime('%Y-%m-%dT%H:%M:%S')
-            else:
-                break
+        # get data
+        res = self._fetch_data_time_series('time-series/price-metrics', query_args)
 
         return PriceMetricsResponse(res, query_args)
 
@@ -209,8 +205,6 @@ class StockGeistClient:
                           end: str = None) -> TopicMetricsResponse:
         """
         Queries StockGeist's API and gets topic metrics data.
-        Returns :class:`TopicMetricsResponse <TopicMetricsResponse>` object.
-
         :param symbol: Stock ticker for which to retrieve data.
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
         :param filter: What metrics to return with the response. Possible values are: words, scores. For more
@@ -219,36 +213,15 @@ class StockGeistClient:
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
-        :return: TopicMetricsResponse
+        :return: TopicMetricsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        res = []
-        for _ in tqdm(self._gen()):
-            # construct query
-            query = self._construct_query('time-series/topic-metrics', query_args)
-
-            # query endpoint
-            res_batch = self._session.get(query).json()
-            res.append(res_batch)
-
-            # check response
-            if res_batch['metadata']['status_code'] != 200:
-                return TopicMetricsResponse(res, query_args)
-
-            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
-
-            if start is not None:
-                # check whether all data range is fetched
-                if first_timestamp == query_args['start']:
-                    break
-                else:
-                    query_args['end'] = first_timestamp
-            else:
-                break
+        # get data
+        res = self._fetch_data_time_series('time-series/topic-metrics', query_args)
 
         return TopicMetricsResponse(res, query_args)
 
@@ -265,8 +238,8 @@ class StockGeistClient:
         Queries StockGeist's API and gets ranking metrics data.
         :param symbol: Stock ticker for which to retrieve data.
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
-        :param filter: What metrics to return with the response. Possible values are: words, scores. For more
-        information check https://docs.stockgeist.ai.
+        :param filter: What metrics to return with the response. Possible values are: symbols, scores, score_changes,
+            values. For more information check https://docs.stockgeist.ai.
         :param start: Timestamp of the earliest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
@@ -278,56 +251,32 @@ class StockGeistClient:
         :param direction: Ranking direction: descending/ascending leaves stock with largest/smallest metric
             value at the top.
         :param top: Number of top stocks to return.
-        :return: RankingMetricsResponse
+        :return: RankingMetricsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        res = []
-        for _ in tqdm(self._gen()):
-            # construct query
-            query = self._construct_query('time-series/ranking-metrics', query_args)
-
-            # query endpoint
-            res_batch = self._session.get(query).json()
-            res.append(res_batch)
-
-            # check response
-            if res_batch['metadata']['status_code'] != 200:
-                return RankingMetricsResponse(res, query_args)
-
-            first_timestamp = pd.Timestamp(res_batch['body'][0]['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
-
-            if start is not None:
-                # check whether all data range is fetched
-                if first_timestamp == query_args['start']:
-                    break
-                else:
-                    query_args['end'] = first_timestamp
-            else:
-                break
+        # get data
+        res = self._fetch_data_time_series('time-series/ranking-metrics', query_args)
 
         return RankingMetricsResponse(res, query_args)
 
     def get_symbols(self) -> SymbolsResponse:
         """
         Queries StockGeist's API and gets all available symbols.
-        :return: SymbolsResponse
+        :return: SymbolsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = self._construct_query('snapshot/symbols', query_args)
+        # get data
+        res = self._fetch_data_snapshot('snapshot/symbols', query_args)
 
-        # query endpoint
-        res = self._session.get(query).json()
-
-        return SymbolsResponse([res], query_args)
+        return SymbolsResponse(res, query_args)
 
     def get_fundamentals(self,
                          symbol: str = None,
@@ -345,17 +294,14 @@ class StockGeistClient:
         eps_next_5_y, recom, roe, shs_outstand, description, 52w_low_diff, company_name, target_price, market_cap,
         optionable, shortable, insider_own, shs_float, lt_debt_to_eq. For more information check
         https://docs.stockgeist.ai.
-        :return: FundamentalsResponse object
+        :return: FundamentalsResponse object.
         """
 
         # get query arguments
         query_args = locals()
         query_args.pop('self')
 
-        # construct query
-        query = self._construct_query('snapshot/fundamentals', query_args)
+        # get data
+        res = self._fetch_data_snapshot('snapshot/fundamentals', query_args)
 
-        # query endpoint
-        res = self._session.get(query).json()
-
-        return FundamentalsResponse([res], query_args)
+        return FundamentalsResponse(res, query_args)

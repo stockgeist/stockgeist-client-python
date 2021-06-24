@@ -1,3 +1,8 @@
 .idea
 __pycache__
 *egg-info
+main.py
+scratch.ipynb
+dist
+.ipynb_checkpoints
+.env

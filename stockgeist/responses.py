@@ -402,12 +402,19 @@ class PriceMetricsResponse(_Response):
                                     right_y_metric_names=['volume'])
 
             # remove gaps in chart where there is no data
-            fig.update_xaxes(
-                rangebreaks=[
-                    dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
-                    dict(bounds=[21.5, 12], pattern="hour"),  # hide non-market hours
-                ]
-            )
+            if self._query_args['timeframe'] != '1d':
+                fig.update_xaxes(
+                    rangebreaks=[
+                        dict(bounds=[21.5, 12], pattern="hour"),  # hide non-market hours
+                        dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
+                    ]
+                )
+            else:
+                fig.update_xaxes(
+                    rangebreaks=[
+                        dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
+                    ]
+                )
             fig.show()
 
         else:
