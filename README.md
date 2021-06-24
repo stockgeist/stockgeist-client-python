@@ -1,5 +1,6 @@
 ![example workflow](https://github.com/stockgeist/stockgeist-client-python/actions/workflows/main.yml/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/stockgeist-client-python/badge/?version=latest)](https://stockgeist-client-python.readthedocs.io/en/latest/?badge=latest)
+
+[comment]: <> ([![Documentation Status]&#40;https://readthedocs.org/projects/stockgeist-client-python/badge/?version=latest&#41;]&#40;https://stockgeist-client-python.readthedocs.io/en/latest/?badge=latest&#41;)
 
 
 # stockgeist-client-python
