@@ -6,3 +6,4 @@ scratch.ipynb
 dist
 .ipynb_checkpoints
 .env
+.coverage
