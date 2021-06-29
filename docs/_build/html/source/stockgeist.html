@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>stockgeist package &#8212; stockgeist-client-python 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="stockgeist-package">
+<h1>stockgeist package<a class="headerlink" href="#stockgeist-package" title="Permalink to this headline">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-stockgeist.analysis">
+<span id="stockgeist-analysis-module"></span><h2>stockgeist.analysis module<a class="headerlink" href="#module-stockgeist.analysis" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.analysis.Plotter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.analysis.</span></span><span class="sig-name descname"><span class="pre">Plotter</span></span><a class="reference internal" href="../_modules/stockgeist/analysis.html#Plotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.analysis.Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.analysis.Plotter.plot_metrics">
+<span class="sig-name descname"><span class="pre">plot_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/analysis.html#Plotter.plot_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.analysis.Plotter.plot_metrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stockgeist.client">
+<span id="stockgeist-client-module"></span><h2>stockgeist.client module<a class="headerlink" href="#module-stockgeist.client" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.client.</span></span><span class="sig-name descname"><span class="pre">StockGeistClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Client class responsible for communication with StockGeist’s API.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_article_metrics">
+<span class="sig-name descname"><span class="pre">get_article_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeframe</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'5m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('titles')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.ArticleMetricsResponse" title="stockgeist.responses.ArticleMetricsResponse"><span class="pre">stockgeist.responses.ArticleMetricsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_article_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_article_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets article metrics data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> – Stock ticker for which to retrieve data.</p></li>
+<li><p><strong>timeframe</strong> – Time resolution of returned data. Possible values are 5m, 1h, 1d.</p></li>
+<li><p><strong>filter</strong> – What metrics to return with the response. Possible values are: titles, title_sentiments,
+mentions, summaries, sentiment_spans, urls. For more information check <a class="reference external" href="https://docs.stockgeist.ai">https://docs.stockgeist.ai</a>.</p></li>
+<li><p><strong>start</strong> – Timestamp of the earliest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+<li><p><strong>end</strong> – Timestamp of the latest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ArticleMetricsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_fundamentals">
+<span class="sig-name descname"><span class="pre">get_fundamentals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('market_cap')</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.FundamentalsResponse" title="stockgeist.responses.FundamentalsResponse"><span class="pre">stockgeist.responses.FundamentalsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_fundamentals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_fundamentals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets fundamentals data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> – Stock ticker for which to retrieve data.h, 1d.</p></li>
+<li><p><strong>filter</strong> – What metrics to return with the response. Possible values are: <code class="docutils literal notranslate"><span class="pre">book_to_sh</span></code>, <code class="docutils literal notranslate"><span class="pre">rsi_14</span></code>,
+<code class="docutils literal notranslate"><span class="pre">eps_next_y</span></code>,
+52w_range, eps_ttm, roa, dividend_perc, beta, oper_margin, p_to_fcf, eps_this_y, inst_trans, p_to_b,
+rel_volume, perf_quarter, sales, roi, inst_own, index, perf_ytd, eps_next_q, avg_volume, dividend, p_to_c,
+insider_trans, short_float, country, income, perf_year, perf_half_y, atr, sales_past_5_y, 52w_high_diff,
+gross_margin, peg, perf_month, volatility, cash_to_sh, short_ratio, eps_past_5_y, debt_to_eq, sector,
+industry, eps_q_to_q, p_to_e, prev_close, volume, sma_20_diff, p_to_s, price, current_ratio, forward_p_to_e,
+sma_50_diff, employees, profit_margin, sma_200_diff, sales_q_to_q, earnings, perf_week, quick_ratio, payout,
+eps_next_5_y, recom, roe, shs_outstand, description, 52w_low_diff, company_name, target_price, market_cap,
+optionable, shortable, insider_own, shs_float, lt_debt_to_eq. For more information check
+<a class="reference external" href="https://docs.stockgeist.ai">https://docs.stockgeist.ai</a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>FundamentalsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_message_metrics">
+<span class="sig-name descname"><span class="pre">get_message_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeframe</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'5m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('total_count')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.MessageMetricsResponse" title="stockgeist.responses.MessageMetricsResponse"><span class="pre">stockgeist.responses.MessageMetricsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_message_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_message_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets message metrics data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> – Stock ticker for which to retrieve data.</p></li>
+<li><p><strong>timeframe</strong> – Time resolution of returned data. Possible values are 5m, 1h, 1d.</p></li>
+<li><p><strong>filter</strong> – What metrics to return with the response. Possible values are: inf_positive_count,
+inf_neutral_count, inf_negative_count, inf_total_count, em_positive_count, em_neutral_count,
+em_negative_count, em_total_count, total_count, pos_index, msg_ratio, ma, ma_diff, std_dev,
+ma_count_change. For more information check <a class="reference external" href="https://docs.stockgeist.ai">https://docs.stockgeist.ai</a>.</p></li>
+<li><p><strong>start</strong> – Timestamp of the earliest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+<li><p><strong>end</strong> – Timestamp of the latest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MessageMetricsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_price_metrics">
+<span class="sig-name descname"><span class="pre">get_price_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeframe</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'5m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('close')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.PriceMetricsResponse" title="stockgeist.responses.PriceMetricsResponse"><span class="pre">stockgeist.responses.PriceMetricsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_price_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_price_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets price metrics data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> – Stock ticker for which to retrieve data.</p></li>
+<li><p><strong>timeframe</strong> – Time resolution of returned data. Possible values are 5m, 1h, 1d.</p></li>
+<li><p><strong>filter</strong> – What metrics to return with the response. Possible values are: open, high, low, close, volume.
+For more information check <a class="reference external" href="https://docs.stockgeist.ai">https://docs.stockgeist.ai</a>.</p></li>
+<li><p><strong>start</strong> – Timestamp of the earliest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+<li><p><strong>end</strong> – Timestamp of the latest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>PriceMetricsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_ranking_metrics">
+<span class="sig-name descname"><span class="pre">get_ranking_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeframe</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'5m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('symbols')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'total_count'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'descending'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.RankingMetricsResponse" title="stockgeist.responses.RankingMetricsResponse"><span class="pre">stockgeist.responses.RankingMetricsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_ranking_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_ranking_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets ranking metrics data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> – Stock ticker for which to retrieve data.</p></li>
+<li><p><strong>timeframe</strong> – Time resolution of returned data. Possible values are 5m, 1h, 1d.</p></li>
+<li><p><strong>filter</strong> – What metrics to return with the response. Possible values are: symbols, scores, score_changes,
+values. For more information check <a class="reference external" href="https://docs.stockgeist.ai">https://docs.stockgeist.ai</a>.</p></li>
+<li><p><strong>start</strong> – Timestamp of the earliest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+<li><p><strong>end</strong> – Timestamp of the latest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+<li><p><strong>by</strong> – Select message metric by which stock ranking is produced. Possible values are: inf_positive_count,
+inf_neutral_count, inf_negative_count, inf_total_count, em_positive_count, em_neutral_count,
+em_negative_count, em_total_count, total_count, pos_index, msg_ratio, ma, ma_diff, std_dev,
+ma_count_change.</p></li>
+<li><p><strong>direction</strong> – Ranking direction: descending/ascending leaves stock with largest/smallest metric
+value at the top.</p></li>
+<li><p><strong>top</strong> – Number of top stocks to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>RankingMetricsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_symbols">
+<span class="sig-name descname"><span class="pre">get_symbols</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.SymbolsResponse" title="stockgeist.responses.SymbolsResponse"><span class="pre">stockgeist.responses.SymbolsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_symbols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_symbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets all available symbols.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>SymbolsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.client.StockGeistClient.get_topic_metrics">
+<span class="sig-name descname"><span class="pre">get_topic_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeframe</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'5m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('words')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#stockgeist.responses.TopicMetricsResponse" title="stockgeist.responses.TopicMetricsResponse"><span class="pre">stockgeist.responses.TopicMetricsResponse</span></a><a class="reference internal" href="../_modules/stockgeist/client.html#StockGeistClient.get_topic_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.client.StockGeistClient.get_topic_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries StockGeist’s API and gets topic metrics data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> – Stock ticker for which to retrieve data.</p></li>
+<li><p><strong>timeframe</strong> – Time resolution of returned data. Possible values are 5m, 1h, 1d.</p></li>
+<li><p><strong>filter</strong> – What metrics to return with the response. Possible values are: words, scores. For more
+information check <a class="reference external" href="https://docs.stockgeist.ai">https://docs.stockgeist.ai</a>.</p></li>
+<li><p><strong>start</strong> – Timestamp of the earliest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+<li><p><strong>end</strong> – Timestamp of the latest data point in returned time series. Time is assumed to be in
+UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>TopicMetricsResponse object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stockgeist.responses">
+<span id="stockgeist-responses-module"></span><h2>stockgeist.responses module<a class="headerlink" href="#module-stockgeist.responses" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.ArticleMetricsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">ArticleMetricsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#ArticleMetricsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.ArticleMetricsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>article-metrics</em> endpoint of StockGeist’s API.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.responses.ArticleMetricsResponse.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'titles'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../_modules/stockgeist/responses.html#ArticleMetricsResponse.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.ArticleMetricsResponse.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize selected metrics from the downloaded article metrics data.
+:param what: String with metrics joined by + signs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.responses.ArticleMetricsResponse.visualize_sentiment">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">visualize_sentiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">summary</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sentiment_spans</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../_modules/stockgeist/responses.html#ArticleMetricsResponse.visualize_sentiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.ArticleMetricsResponse.visualize_sentiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print specified summary text with positive-sentiment parts displayed as green and negative-sentiment parts as red.
+:param summary: Single summary string from downloaded article metrics data.
+:param sentiment_spans: Sentiment spans corresponding to specified summary string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.FundamentalsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">FundamentalsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#FundamentalsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.FundamentalsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>fundametals</em> endpoint of StockGeist’s API.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="stockgeist.responses.FundamentalsResponse.as_dataframe">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">as_dataframe</span></span><a class="headerlink" href="#stockgeist.responses.FundamentalsResponse.as_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="stockgeist.responses.FundamentalsResponse.as_dict">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">as_dict</span></span><a class="headerlink" href="#stockgeist.responses.FundamentalsResponse.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.MessageMetricsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">MessageMetricsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#MessageMetricsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.MessageMetricsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>message-metrics</em> endpoint of StockGeist’s API.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.responses.MessageMetricsResponse.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'total_count'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../_modules/stockgeist/responses.html#MessageMetricsResponse.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.MessageMetricsResponse.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize selected metrics from the downloaded message metrics data.
+:param what: String with metrics joined by + signs.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.PriceMetricsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">PriceMetricsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#PriceMetricsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.PriceMetricsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>price-metrics</em> endpoint of StockGeist’s API.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.responses.PriceMetricsResponse.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'close'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_candlesticks</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../_modules/stockgeist/responses.html#PriceMetricsResponse.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.PriceMetricsResponse.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize selected metrics from the downloaded price metrics data.
+:param what: String with metrics joined by + signs.
+:param display_candlesticks: Whether to display candlestick OHLCV chart (requires all corresponding metrics).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.RankingMetricsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">RankingMetricsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#RankingMetricsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.RankingMetricsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>ranking-metrics</em> endpoint of StockGeist’s API.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.responses.RankingMetricsResponse.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#RankingMetricsResponse.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.RankingMetricsResponse.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize selected metrics from the downloaded ranking metrics data.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.SymbolsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">SymbolsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#SymbolsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.SymbolsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>symbols</em> endpoint of StockGeist’s API.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="stockgeist.responses.SymbolsResponse.as_dataframe">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">as_dataframe</span></span><a class="headerlink" href="#stockgeist.responses.SymbolsResponse.as_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="stockgeist.responses.SymbolsResponse.as_dict">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">as_dict</span></span><a class="headerlink" href="#stockgeist.responses.SymbolsResponse.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="stockgeist.responses.TopicMetricsResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">stockgeist.responses.</span></span><span class="sig-name descname"><span class="pre">TopicMetricsResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/stockgeist/responses.html#TopicMetricsResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.TopicMetricsResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stockgeist.responses._Response</span></code></p>
+<p>Object containing data received from the <em>topic-metrics</em> endpoint of StockGeist’s API.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="stockgeist.responses.TopicMetricsResponse.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../_modules/stockgeist/responses.html#TopicMetricsResponse.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stockgeist.responses.TopicMetricsResponse.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize selected metrics from the downloaded article metrics data.
+:param timestamp: Timestamp of data point to be visualized.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-stockgeist">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-stockgeist" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">stockgeist-client-python</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, StockGeist.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/source/stockgeist.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

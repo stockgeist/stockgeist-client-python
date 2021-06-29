@@ -7,9 +7,17 @@ Welcome to stockgeist-client-python's documentation!
 ====================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree: generated
+
+   sphinxdemo_with_docs.__init__
+   sphinxdemo_with_docs.__main__
+   sphinxdemo_with_docs.file_functions
 
 
 Indices and tables

@@ -25,8 +25,11 @@ class StockGeistClient:
     def _construct_query(self, endpoint_name: str, query_args: Dict[str, object]) -> str:
         """
         Helper function for constructing API query.
+
         :param endpoint_name: Name of the StockGeist's REST API endpoint.
+
         :param query_args: Dict containing all arguments passed to REST API.
+
         :return: REST API query string.
         """
 
@@ -45,8 +48,11 @@ class StockGeistClient:
     def _fetch_data_time_series(self, endpoint_name: str, query_args: Dict) -> List[Dict]:
         """
         Fetch data from time series endpoints of REST API.
+
         :param endpoint_name: Name of the StockGeist's REST API endpoint.
+
         :param query_args: Dict containing all arguments passed to REST API.
+
         :return: list of batches of data returned by REST API.
         """
 
@@ -98,8 +104,11 @@ class StockGeistClient:
     def _fetch_data_snapshot(self, endpoint_name: str, query_args: Dict) -> List[Dict]:
         """
         Fetch data from snapshot endpoints of REST API.
+
         :param endpoint_name: Name of the StockGeist's REST API endpoint.
+
         :param query_args: Dict containing all arguments passed to REST API.
+
         :return: list of batches of data returned by REST API.
         """
 
@@ -119,16 +128,22 @@ class StockGeistClient:
                             end: str = None) -> MessageMetricsResponse:
         """
         Queries StockGeist's API and gets message metrics data.
+
         :param symbol: Stock ticker for which to retrieve data.
+
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
+
         :param filter: What metrics to return with the response. Possible values are: inf_positive_count,
             inf_neutral_count, inf_negative_count, inf_total_count, em_positive_count, em_neutral_count,
             em_negative_count, em_total_count, total_count, pos_index, msg_ratio, ma, ma_diff, std_dev,
             ma_count_change. For more information check https://docs.stockgeist.ai.
+
         :param start: Timestamp of the earliest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :return: MessageMetricsResponse object.
         """
 
@@ -149,14 +164,20 @@ class StockGeistClient:
                             end: str = None) -> ArticleMetricsResponse:
         """
         Queries StockGeist's API and gets article metrics data.
+
         :param symbol: Stock ticker for which to retrieve data.
+
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
+
         :param filter: What metrics to return with the response. Possible values are: titles, title_sentiments,
             mentions, summaries, sentiment_spans, urls. For more information check https://docs.stockgeist.ai.
+
         :param start: Timestamp of the earliest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :return: ArticleMetricsResponse object.
         """
 
@@ -177,14 +198,20 @@ class StockGeistClient:
                           end: str = None) -> PriceMetricsResponse:
         """
         Queries StockGeist's API and gets price metrics data.
+
         :param symbol: Stock ticker for which to retrieve data.
+
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
+
         :param filter: What metrics to return with the response. Possible values are: open, high, low, close, volume.
             For more information check https://docs.stockgeist.ai.
+
         :param start: Timestamp of the earliest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :return: PriceMetricsResponse object.
         """
 
@@ -205,14 +232,20 @@ class StockGeistClient:
                           end: str = None) -> TopicMetricsResponse:
         """
         Queries StockGeist's API and gets topic metrics data.
+
         :param symbol: Stock ticker for which to retrieve data.
+
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
+
         :param filter: What metrics to return with the response. Possible values are: words, scores. For more
             information check https://docs.stockgeist.ai.
+
         :param start: Timestamp of the earliest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :return: TopicMetricsResponse object.
         """
 
@@ -236,21 +269,30 @@ class StockGeistClient:
                             top: int = 5) -> RankingMetricsResponse:
         """
         Queries StockGeist's API and gets ranking metrics data.
+
         :param symbol: Stock ticker for which to retrieve data.
+
         :param timeframe: Time resolution of returned data. Possible values are 5m, 1h, 1d.
+
         :param filter: What metrics to return with the response. Possible values are: symbols, scores, score_changes,
             values. For more information check https://docs.stockgeist.ai.
+
         :param start: Timestamp of the earliest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :param end: Timestamp of the latest data point in returned time series. Time is assumed to be in
             UTC time zone. Valid format: YYYY-mm-ddTHH:MM:SS.
+
         :param by: Select message metric by which stock ranking is produced. Possible values are: inf_positive_count,
             inf_neutral_count, inf_negative_count, inf_total_count, em_positive_count, em_neutral_count,
             em_negative_count, em_total_count, total_count, pos_index, msg_ratio, ma, ma_diff, std_dev,
             ma_count_change.
+
         :param direction: Ranking direction: descending/ascending leaves stock with largest/smallest metric
             value at the top.
+
         :param top: Number of top stocks to return.
+
         :return: RankingMetricsResponse object.
         """
 
@@ -266,6 +308,7 @@ class StockGeistClient:
     def get_symbols(self) -> SymbolsResponse:
         """
         Queries StockGeist's API and gets all available symbols.
+
         :return: SymbolsResponse object.
         """
 
@@ -283,8 +326,11 @@ class StockGeistClient:
                          filter: Tuple[str, ...] = ('market_cap',)) -> FundamentalsResponse:
         """
         Queries StockGeist's API and gets fundamentals data.
+
         :param symbol: Stock ticker for which to retrieve data.h, 1d.
-        :param filter: What metrics to return with the response. Possible values are: book_to_sh, rsi_14, eps_next_y,
+
+        :param filter: What metrics to return with the response. Possible values are: ``book_to_sh``, ``rsi_14``,
+            ``eps_next_y``,
             52w_range, eps_ttm, roa, dividend_perc, beta, oper_margin, p_to_fcf, eps_this_y, inst_trans, p_to_b,
             rel_volume, perf_quarter, sales, roi, inst_own, index, perf_ytd, eps_next_q, avg_volume, dividend, p_to_c,
             insider_trans, short_float, country, income, perf_year, perf_half_y, atr, sales_past_5_y, 52w_high_diff,
@@ -294,6 +340,7 @@ class StockGeistClient:
             eps_next_5_y, recom, roe, shs_outstand, description, 52w_low_diff, company_name, target_price, market_cap,
             optionable, shortable, insider_own, shs_float, lt_debt_to_eq. For more information check
             https://docs.stockgeist.ai.
+
         :return: FundamentalsResponse object.
         """
 
