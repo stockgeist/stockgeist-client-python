@@ -11,6 +11,8 @@ import wordcloud
 from plotly.subplots import make_subplots
 from termcolor import colored
 
+import pickle
+
 logger = logging.getLogger()
 cf.go_offline(connected=False)
 
@@ -53,8 +55,7 @@ class _Response:
 
         if is_time_series_data:
             # convert deques to lists
-            for key in data.keys():
-                data[key] = list(data[key])
+            data = {key: list(val) for key, val in data.items()}
 
         return data
 
@@ -165,10 +166,15 @@ class MessageMetricsResponse(_Response):
                                    'em_positive_count', 'em_neutral_count', 'em_negative_count', 'em_total_count',
                                    'total_count', 'pos_index', 'msg_ratio', 'ma', 'ma_diff', 'std_dev', 'ma_count_change']
 
-    def visualize(self, what: str = 'total_count') -> None:
+    def visualize(self, what: str = 'total_count', show_fig: bool = True) -> Figure:
         """
         Visualize selected metrics from the downloaded message metrics data.
+
         :param what: String with metrics joined by + signs.
+
+        :param show_fig: Whether to show generated plotly figure or not.
+
+        :return: plotly Figure object.
         """
         # validate metrics
         metric_names = self._validate_metrics(what, self._available_metrics)
@@ -177,9 +183,13 @@ class MessageMetricsResponse(_Response):
         fig = self._plot_simple(title=f'{self._query_args["symbol"]} Message Metrics',
                                 metric_names=metric_names,
                                 right_y_metric_names=['pos_index', 'msg_ratio', 'ma_count_change'])
-        fig.show()
 
-    def __repr__(self):
+        if show_fig:  # pragma: no cover
+            fig.show()
+
+        return fig
+
+    def __repr__(self):  # pragma: no cover
         return f'<message-metrics> endpoint data\n' \
                f'  symbol: {self._query_args["symbol"]}\n' \
                f'  timeframe: {self._query_args["timeframe"]}\n' \
@@ -206,9 +216,13 @@ class ArticleMetricsResponse(_Response):
     def _plot_simple(self, title: str, metric_names: List[str], right_y_metric_names=None) -> Figure:
         """
         Method for plotting line plots tailored to article metrics data.
+
         :param title: String displayed as graph title.
+
         :param metric_names: List of validated metrics.
+
         :param right_y_metric_names: Not used.
+
         :return: plotly Figure object.
         """
 
@@ -327,17 +341,28 @@ class ArticleMetricsResponse(_Response):
 
         return fig
 
-    def visualize(self, what: str = 'titles') -> None:
+    def visualize(self, what: str = 'titles', show_fig: bool = True) -> Figure:
         """
         Visualize selected metrics from the downloaded article metrics data.
+
         :param what: String with metrics joined by + signs.
+
+        :param show_fig: Whether to show generated plotly figure or not
+
+        :return: plotly Figure object.
         """
         # validate metrics
         metric_names = self._validate_metrics(what, self._available_metrics)
 
         fig = self._plot_simple(title=f'{self._query_args["symbol"]} Article Metrics',
                                 metric_names=metric_names)
-        fig.show()
+
+        if show_fig:  # pragma: no cover
+            fig.show()
+
+        pickle.dump(fig, open(f'tests/data/article-metrics/NVDA-fig.pkl', 'wb'))
+
+        return fig
 
     @staticmethod
     def visualize_sentiment(summary: str, sentiment_spans: List[Dict]) -> None:
@@ -364,7 +389,7 @@ class ArticleMetricsResponse(_Response):
         print_colored(summary[i:])
         print()
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'<article-metrics> endpoint data\n' \
                f'  symbol: {self._query_args["symbol"]}\n' \
                f'  timeframe: {self._query_args["timeframe"]}\n' \
@@ -439,7 +464,7 @@ class PriceMetricsResponse(_Response):
             else:
                 logger.warning("Can't display candlestick chart! Make sure, that you downloaded full OHLCV data!")
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'<price-metrics> endpoint data\n' \
                f'  symbol: {self._query_args["symbol"]}\n' \
                f'  timeframe: {self._query_args["timeframe"]}\n' \
@@ -525,7 +550,7 @@ class TopicMetricsResponse(_Response):
         else:
             logger.warning("Can't display word cloud! Make sure, that you downloaded words and scores data!")
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'<topic-metrics> endpoint data\n' \
                f'  symbol: {self._query_args["symbol"]}\n' \
                f'  timeframe: {self._query_args["timeframe"]}\n' \
@@ -592,7 +617,7 @@ class RankingMetricsResponse(_Response):
                                     right_y_metric_names=['values'])
         fig.show()
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'<ranking-metrics> endpoint data\n' \
                f'  symbol: {self._query_args["symbol"]}\n' \
                f'  timeframe: {self._query_args["timeframe"]}\n' \
@@ -626,7 +651,7 @@ class SymbolsResponse(_Response):
         df = pd.DataFrame(d)
         return df
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'<symbols> endpoint data\n' \
                f'  date: {self._raw_data[0]["body"]["timestamp"]}'
 
@@ -654,7 +679,7 @@ class FundamentalsResponse(_Response):
         df = pd.DataFrame({key: [val] for key, val in d.items()})
         return df
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return f'<fundamentals> endpoint data\n' \
                f'  symbol: {self._query_args["symbol"]}\n' \
                f'  date: {self._raw_data[0]["body"]["timestamp"]}' \
