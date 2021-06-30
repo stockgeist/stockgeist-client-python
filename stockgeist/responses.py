@@ -1,6 +1,6 @@
 import logging
 from collections import deque
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import cufflinks as cf
 import numpy as np
@@ -17,7 +17,7 @@ logger = logging.getLogger()
 cf.go_offline(connected=False)
 
 # type aliases
-Figure = go.Figure
+Figure = Union[go.Figure, None]
 
 
 class _Response:
@@ -145,7 +145,6 @@ class _Response:
         # set y axis titles
         fig.update_yaxes(title_text=', '.join(left_y_metrics), secondary_y=False)
         fig.update_yaxes(title_text=', '.join(right_y_metrics), secondary_y=True)
-        fig['layout']['yaxis']['autorange'] = "reversed"
 
         return fig
 
@@ -347,7 +346,7 @@ class ArticleMetricsResponse(_Response):
 
         :param what: String with metrics joined by + signs.
 
-        :param show_fig: Whether to show generated plotly figure or not
+        :param show_fig: Whether to show generated plotly figure or not.
 
         :return: plotly Figure object.
         """
@@ -360,15 +359,15 @@ class ArticleMetricsResponse(_Response):
         if show_fig:  # pragma: no cover
             fig.show()
 
-        pickle.dump(fig, open(f'tests/data/article-metrics/NVDA-fig.pkl', 'wb'))
-
         return fig
 
     @staticmethod
     def visualize_sentiment(summary: str, sentiment_spans: List[Dict]) -> None:
         """
         Print specified summary text with positive-sentiment parts displayed as green and negative-sentiment parts as red.
+
         :param summary: Single summary string from downloaded article metrics data.
+
         :param sentiment_spans: Sentiment spans corresponding to specified summary string.
         """
         def print_colored(text, sentiment=None):
@@ -411,11 +410,17 @@ class PriceMetricsResponse(_Response):
         self._query_args = query_args
         self._available_metrics = ['open', 'high', 'low', 'close', 'volume']
 
-    def visualize(self, what: str = 'close', display_candlesticks: bool = False) -> None:
+    def visualize(self, what: str = 'close', display_candlesticks: bool = False, show_fig: bool = True) -> Figure:
         """
         Visualize selected metrics from the downloaded price metrics data.
+
         :param what: String with metrics joined by + signs.
+
         :param display_candlesticks: Whether to display candlestick OHLCV chart (requires all corresponding metrics).
+
+        :param show_fig: Whether to show generated plotly figure or not.
+
+        :return: plotly Figure object.
         """
         # validate metrics
         metric_names = self._validate_metrics(what, self._available_metrics)
@@ -440,7 +445,10 @@ class PriceMetricsResponse(_Response):
                         dict(bounds=["sat", "mon"]),  # hide weekends, eg. hide sat to before mon
                     ]
                 )
-            fig.show()
+            if show_fig:  # pragma: no cover
+                fig.show()
+
+            return fig
 
         else:
             if 'open' in metric_names and 'high' in metric_names and 'low' in metric_names and 'close' in metric_names \
@@ -459,10 +467,14 @@ class PriceMetricsResponse(_Response):
                             dict(bounds=[21.5, 12], pattern="hour"),  # hide non-market hours
                         ]
                     )
-                fig.show()
 
+                if show_fig:  # pragma: no cover
+                    fig.show()
+
+                return fig
             else:
                 logger.warning("Can't display candlestick chart! Make sure, that you downloaded full OHLCV data!")
+                return
 
     def __repr__(self):  # pragma: no cover
         return f'<price-metrics> endpoint data\n' \
@@ -533,10 +545,15 @@ class TopicMetricsResponse(_Response):
 
         return fig
 
-    def visualize(self, timestamp: str) -> None:
+    def visualize(self, timestamp: str, show_fig: bool = True) -> Figure:
         """
         Visualize selected metrics from the downloaded article metrics data.
+
         :param timestamp: Timestamp of data point to be visualized.
+
+        :param show_fig: Whether to show generated plotly figure or not.
+
+        :return: plotly Figure object.
         """
         try:
             # check whether timestamp is valid
@@ -546,9 +563,13 @@ class TopicMetricsResponse(_Response):
 
         if 'words' in self._available_metrics and 'scores' in self._available_metrics:
             fig = self._plot_wordcloud(n)
-            fig.show()
+            if show_fig:  # pragma: no cover
+                fig.show()
+
+            return fig
         else:
             logger.warning("Can't display word cloud! Make sure, that you downloaded words and scores data!")
+            return
 
     def __repr__(self):  # pragma: no cover
         return f'<topic-metrics> endpoint data\n' \
@@ -605,9 +626,21 @@ class RankingMetricsResponse(_Response):
 
         return fig
 
-    def visualize(self):
+    def _plot_simple(self, title: str, metric_names: List[str], right_y_metric_names: List[str]) -> Figure:
+        fig = super()._plot_simple(title, metric_names, right_y_metric_names)
+
+        # reverse y axis range
+        fig['layout']['yaxis']['autorange'] = "reversed"
+
+        return fig
+
+    def visualize(self, show_fig: bool = True) -> Figure:
         """
         Visualize selected metrics from the downloaded ranking metrics data.
+
+        :param show_fig: Whether to show generated plotly figure or not.
+
+        :return: plotly Figure object.
         """
         if self._query_args['symbol'] is None:
             fig = self._plot_animated()
@@ -615,7 +648,11 @@ class RankingMetricsResponse(_Response):
             fig = self._plot_simple(title=f'{self._query_args["symbol"]} Ranking by {self._query_args["by"]}',
                                     metric_names=['scores'],
                                     right_y_metric_names=['values'])
-        fig.show()
+
+        if show_fig:  # pragma: no cover
+            fig.show()
+
+        return fig
 
     def __repr__(self):  # pragma: no cover
         return f'<ranking-metrics> endpoint data\n' \
