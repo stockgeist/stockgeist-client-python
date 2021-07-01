@@ -120,6 +120,17 @@ class StockGeistClient:
 
         return [res]
 
+    def get_credits(self):
+        """
+        Queries StockGeist's API and gets the number of credits available for given token.
+        """
+
+        # get data
+        res = self._fetch_data_snapshot('snapshot/credits', {})[0]
+        credits = res['metadata']['credits']
+
+        return credits
+
     def get_message_metrics(self,
                             symbol: str,
                             timeframe: str = '5m',
