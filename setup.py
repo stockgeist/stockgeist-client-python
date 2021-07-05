@@ -17,8 +17,8 @@ REQUIRED_PACKAGES = [
 ]
 
 setup(
-    name="stockgeist",
-    version="0.1",
+    name="stockgeist-client-python",
+    version="0.1.1",
     description="StockGeist's REST API Python client.",
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
