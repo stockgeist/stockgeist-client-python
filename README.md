@@ -8,7 +8,7 @@
 Python client for fetching data from StockGeist's REST API. 
 
 The full documentation of the REST API 
-can be found at [https://docs.stockgeist.ai](https://docs.stockgeist.ai).
+can be found at [https://api.stockgeist.ai/v2/docs](https://api.stockgeist.ai/v2/docs).
 
 ## Installation
 You can install the package directly from this repository for getting the version with the latest bug fixes and features
